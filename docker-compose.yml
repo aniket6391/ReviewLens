@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  reviewlens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reviewlens-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - BATCH_SIZE=5
+      # Configure any free LLM API key here (or in .env):
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    volumes:
+      # Persist SQLite review cache between container restarts
+      - reviewlens-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  reviewlens-data:
+    driver: local
